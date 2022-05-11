@@ -1,0 +1,13 @@
+Flask==1.1.4
+flask-sqlalchemy
+Psycopg2
+Flask-Migrate==2.6.0
+Flask-Script==2.0.6
+itsdangerous==1.1.0
+Jinja2==2.11.3
+MarkupSafe==2.0.1
+Werkzeug==1.0.1
+bcrypt
+pyjwt==2.0.0
+datetime
+uuid
