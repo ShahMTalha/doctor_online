@@ -11,4 +11,4 @@ def index():
     return "Welcome to user"
 
 
-from src.controllers import UserController, DoctorController, CommonController
+from src.controllers import UserController, DoctorController, RoasterController, AppointmentController, MedicineController
