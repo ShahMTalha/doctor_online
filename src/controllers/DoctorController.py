@@ -4,6 +4,9 @@ from src.common.Authentication import Authentication
 from . import doctor_bp
 from src.models.UserModel import UserModel
 from src.models.DoctorDetailModel import DoctorDetailModel
+from src.models.PrecreptionDetailModel import PrecreptionDetailModel
+from src.models.PrecreptionModel import PrecreptionModel
+import json
 
 
 @doctor_bp.route('/add_details', methods=['POST'])
@@ -91,6 +94,71 @@ def get_doctor():
 
         else:
             response = Response.error(ResponseCodes.pre_condition.value, ResponseMessages.doctor_not_found.value)
+
+    except Exception as e:
+        response = Response.error(ResponseCodes.forbidden.value, ResponseMessages.error.value + str(e))
+
+    return jsonify(response)
+
+
+@doctor_bp.route('/add_precreption', methods=['POST'])
+@Authentication.decode_auth_token
+def add_precreption():
+    try:
+        doctor = request.form['doctor']
+        patient = request.form['patient']
+        notes = request.form['notes']
+        severity = request.form['severity']
+        medicine_details = json.loads(request.form.get('medicine_details', "[]"))
+        prec = PrecreptionModel(doctor, patient, notes, severity)
+        prec.save()
+        if prec:
+            for each in medicine_details:
+                prec_detail = PrecreptionDetailModel(prec.id, each['med_id'], each['days'], each['frequency'], each['amount'])
+                prec_detail.save()
+        response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value, key='detail_id',
+                                    data=prec.id)
+
+    except Exception as e:
+        response = Response.error(ResponseCodes.forbidden.value, ResponseMessages.error.value + str(e))
+
+    return jsonify(response)
+
+
+@doctor_bp.route('/get_precreption', methods=['GET'])
+@Authentication.decode_auth_token
+def get_precreption():
+    try:
+        id = request.args.get('id', '')
+        doctor = request.args.get('doctor', '')
+        patient = request.args.get('patient', '')
+        prec_data = PrecreptionDetailModel.get_precreption(id=id, doctor=doctor, patient=patient)
+
+        if prec_data:
+            data = []
+            for each in prec_data:
+                each = {
+                    'id': each.id,
+                    'doctor': each.doctor,
+                    'doctor_name': each.doctor_name,
+                    'patient': each.patient,
+                    'patient_name': each.patient_name,
+                    'notes': each.notes,
+                    'severity': each.severity,
+                    'status': each.status,
+                    'medicine_id': each.medicine_id,
+                    'medicine_name': each.name,
+                    'company': each.company,
+                    'amount': each.amount,
+                    'frequency': each.frequency,
+                    'days': each.days,
+                    'image': '/static/' + each.image if each.image else ''
+                }
+                data.append(each)
+            response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value, data=data)
+
+        else:
+            response = Response.error(ResponseCodes.pre_condition.value, ResponseMessages.precp_not_found.value)
 
     except Exception as e:
         response = Response.error(ResponseCodes.forbidden.value, ResponseMessages.error.value + str(e))

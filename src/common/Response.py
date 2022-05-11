@@ -21,6 +21,7 @@ class ResponseMessages(enum.Enum):
     invalid_token = "Invalid token. Please log in again."
     medicine_not_found = "No medicine found against search"
     doctor_not_found = "No doctor found against search"
+    precp_not_found = "No precreption found against search"
     appointment_not_found = "Appointment can not arranged slot not available or already taken"
 
 
