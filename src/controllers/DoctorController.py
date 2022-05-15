@@ -6,6 +6,7 @@ from src.models.UserModel import UserModel
 from src.models.DoctorDetailModel import DoctorDetailModel
 from src.models.PrecreptionDetailModel import PrecreptionDetailModel
 from src.models.PrecreptionModel import PrecreptionModel
+from src.models.PatientHistoryModel import PatientHistoryModel
 import json
 
 
@@ -116,6 +117,8 @@ def add_precreption():
             for each in medicine_details:
                 prec_detail = PrecreptionDetailModel(prec.id, each['med_id'], each['days'], each['frequency'], each['amount'])
                 prec_detail.save()
+        history = PatientHistoryModel(patient, precreption=str(prec.id))
+        history.save()
         response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value, key='detail_id',
                                     data=prec.id)
 
