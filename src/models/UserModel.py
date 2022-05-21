@@ -9,7 +9,7 @@ class UserModel(db.Model):
     email = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(), nullable=False)
     name = db.Column(db.String(), nullable=False)
-    phone_number = db.Column(db.Integer)
+    phone_number = db.Column(db.BigInteger)
     gender = db.Column(db.String(20))
     user_type = db.Column(db.String(10), nullable=False)
     image = db.Column(db.String())

@@ -36,7 +36,7 @@ class DoctorDetailModel(db.Model):
         db.session.commit()
 
     @staticmethod
-    def get_doctor(user_id="", name=None, specialized=None, serving_type=None, serving=None):
+    def get_doctor(user_id="", name=None, specialized=None, serving_type=None, serving=None, verified=None):
         doctor = UserModel.query.with_entities(DoctorDetailModel.id, DoctorDetailModel.user_id, UserModel.name,
                                                UserModel.email, DoctorDetailModel.specialized,
                                                UserModel.user_type, UserModel.phone_number, UserModel.gender,
@@ -53,6 +53,8 @@ class DoctorDetailModel(db.Model):
         if serving:
             search = "%{}%".format(serving.lower())
             doctor = doctor.filter(func.lower(DoctorDetailModel.serving).like(search))
+        if verified:
+            doctor = doctor.filter(DoctorDetailModel.verified == verified)
         if specialized:
             search = "%{}%".format(specialized.lower())
             doctor = doctor.filter(func.lower(DoctorDetailModel.specialized).like(search))

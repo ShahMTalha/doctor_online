@@ -67,8 +67,9 @@ def get_doctor():
         specialized = request.args.get('specialized', '')
         serving_type = request.args.get('serving_type', '')
         serving = request.args.get('serving', '')
+        verified = request.args.get('verified', '')
         doctors_data = DoctorDetailModel.get_doctor(user_id=user_id, name=name, specialized=specialized, serving=serving,
-                                                serving_type=serving_type)
+                                                serving_type=serving_type, verified=verified)
 
         if doctors_data:
             data = []

@@ -36,7 +36,7 @@ class OrderDetailModel(db.Model):
                                                OrderModel.patient_id, OrderModel.store_id, OrderModel.total,
                                                Patient.name.label("patient_name"), Store.name.label("store_name"),
                                                StoreMedicinesModel.medicine_id, StoreMedicinesModel.price,
-                                               OrderModel.status,
+                                               OrderModel.status, OrderModel.address,
                                                MedicineModel.name.label("med_name"), MedicineModel.image) \
             .join(OrderModel, OrderDetailModel.order_id == OrderModel.id)\
             .join(StoreMedicinesModel, OrderDetailModel.store_medicine_id == StoreMedicinesModel.id)\

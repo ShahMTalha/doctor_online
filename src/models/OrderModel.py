@@ -13,13 +13,15 @@ class OrderModel(db.Model):
     store_id = db.Column(db.Integer, db.ForeignKey(UserModel.id), nullable=False)
     total = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(), nullable=False)
+    address = db.Column(db.String())
     created_at = db.Column(db.DateTime, nullable=False)
     modified_at = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, patient_id, store_id, total):
+    def __init__(self, patient_id, store_id, total, address):
         self.patient_id = patient_id
         self.store_id = store_id
         self.total = total
+        self.address = address
         self.status = 'pending'
         self.created_at = datetime.datetime.now()
         self.modified_at = datetime.datetime.now()
@@ -33,7 +35,7 @@ class OrderModel(db.Model):
         Patient = aliased(UserModel)
         Store = aliased(UserModel)
         order = OrderModel.query.with_entities(OrderModel.id, OrderModel.patient_id, OrderModel.total,
-                                               OrderModel.store_id, OrderModel.status,
+                                               OrderModel.store_id, OrderModel.status, OrderModel.address,
                                                Patient.name.label("patient_name"), Store.name.label("store_name")) \
             .join(Patient, OrderModel.patient_id == Patient.id)\
             .join(Store, OrderModel.store_id == Store.id)

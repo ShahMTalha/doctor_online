@@ -33,7 +33,7 @@ class LabDetailModel(db.Model):
         db.session.commit()
 
     @staticmethod
-    def get_lab(user_id="", name=None):
+    def get_lab(user_id="", name=None, verified=None):
         lab = UserModel.query.with_entities(LabDetailModel.id, LabDetailModel.user_id, UserModel.name,
                                             UserModel.email, LabDetailModel.address, UserModel.user_type,
                                             UserModel.phone_number, UserModel.gender, UserModel.image,
@@ -43,6 +43,8 @@ class LabDetailModel(db.Model):
                         .filter(UserModel.user_type == 'lab')
         if user_id:
             lab = lab.filter(LabDetailModel.user_id == user_id)
+        if verified:
+            lab = lab.filter(LabDetailModel.verified == verified)
         if name:
             search = "%{}%".format(name.lower())
             lab = lab.filter(func.lower(UserModel.name).like(search))
@@ -56,7 +58,7 @@ class LabDetailModel(db.Model):
          distance FROM lab_details ld inner join users u on ld.user_id = u.id CROSS JOIN LATERAL \
         (VALUES ( SQRT(POW(69.1 * (ld.latitude - "+str(lat)+"), 2) + POW(69.1 * ("+str(long)+" - ld.longitude) \
         * COS(ld.latitude / 57.3), 2)) )) v(distance) where v.distance < "+str(geo_range)+" and u.user_type = 'lab' \
-        and ld.user_id != " + str(own_id) + " \
+        and ld.user_id != " + str(own_id) + " and ld.verified = 1 \
         order by distance asc  limit "+str(limit)+" offset "+str(offset)+"")
         lab = db.engine.execute(query).all()
         return lab

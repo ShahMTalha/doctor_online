@@ -114,6 +114,7 @@ def get_order():
                     'store_id': each.store_id,
                     'patient_name': each.patient_name,
                     'store_name': each.store_name,
+                    'address': each.address
                 }
                 data.append(each_rec)
             response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value, data=data)
@@ -135,8 +136,9 @@ def add_order():
         patient_id = request.form['patient_id']
         store_id = request.form['store_id']
         total = request.form['total']
+        address = request.form['address']
         medicine_details = json.loads(request.form.get('medicine_details', "[]"))
-        order = OrderModel(patient_id, store_id, total)
+        order = OrderModel(patient_id, store_id, total, address)
         order.save()
         if order:
             for each in medicine_details:
@@ -156,7 +158,9 @@ def update_order():
     try:
         order_id = request.form.get('order_id', "")
         data_to_update = {
-            "status": request.form.get('status', "")
+            "status": request.form.get('status', ""),
+            "order": request.form.get('order', ""),
+            "total": request.form.get('total', "")
         }
         data_to_update = dict([(k, v) for k, v in data_to_update.items() if len(v) > 0])
         OrderModel.update_by_id(order_id, data_to_update)
@@ -187,6 +191,7 @@ def get_order_details():
                     'store_id': each.store_id,
                     'total': each.total,
                     'status': each.status,
+                    'address': each.address,
                     'patient_name': each.patient_name,
                     'store_name': each.store_name,
                     'medicine_id': each.medicine_id,

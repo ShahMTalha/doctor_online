@@ -58,7 +58,8 @@ def get_details():
     try:
         user_id = request.args.get('user_id', '')
         name = request.args.get('name', '')
-        db_data = AmbulanceDetailModel.get_ambulance(user_id=user_id, name=name)
+        verified = request.args.get('verified', '')
+        db_data = AmbulanceDetailModel.get_ambulance(user_id=user_id, name=name, verified=verified)
 
         if db_data:
             data = []

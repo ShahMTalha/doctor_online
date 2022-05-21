@@ -33,7 +33,7 @@ class AmbulanceDetailModel(db.Model):
         db.session.commit()
 
     @staticmethod
-    def get_ambulance(user_id="", name=None):
+    def get_ambulance(user_id="", name=None, verified=None):
         ambulance = UserModel.query.with_entities(AmbulanceDetailModel.id, AmbulanceDetailModel.user_id, UserModel.name,
                                             UserModel.email, AmbulanceDetailModel.address, UserModel.user_type,
                                             UserModel.phone_number, UserModel.gender, UserModel.image,
@@ -43,6 +43,8 @@ class AmbulanceDetailModel(db.Model):
                         .filter(UserModel.user_type == 'ambulance')
         if user_id:
             ambulance = ambulance.filter(AmbulanceDetailModel.user_id == user_id)
+        if verified:
+            ambulance = ambulance.filter(AmbulanceDetailModel.verified == verified)
         if name:
             search = "%{}%".format(name.lower())
             ambulance = ambulance.filter(func.lower(UserModel.name).like(search))
@@ -56,7 +58,7 @@ class AmbulanceDetailModel(db.Model):
                  distance FROM ambulance_details ld inner join users u on ld.user_id = u.id CROSS JOIN LATERAL \
                 (VALUES ( SQRT(POW(69.1 * (ld.latitude - " + str(lat) + "), 2) + POW(69.1 * (" + str(long) + " - ld.longitude) \
                 * COS(ld.latitude / 57.3), 2)) )) v(distance) where v.distance < " + str(geo_range) + " and u.user_type = 'ambulance' \
-                and ld.user_id != " + str(own_id) + " \
+                and ld.user_id != " + str(own_id) + " and ld.verified = 1 \
                 order by distance asc  limit " + str(limit) + " offset " + str(offset) + "")
         ambulance =  db.engine.execute(query).all()
         return ambulance
