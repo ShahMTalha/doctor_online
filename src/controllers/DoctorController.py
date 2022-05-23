@@ -19,10 +19,12 @@ def add_details():
         qualification = request.form['qualification']
         serving = request.form['serving']
         experience = request.form.get('experience', "1")
+        pmc_number = request.form.get('pmc_number')
         specialized = request.form['specialized']
         serving_type = request.form.get('serving_type', "public")
         if UserModel.get_user(user_id=user_id, user_type='doctor'):
-            doctor = DoctorDetailModel(user_id, age, qualification, serving, experience, specialized, serving_type)
+            doctor = DoctorDetailModel(user_id, age, qualification, serving, experience, specialized, serving_type,
+                                       pmc_number)
             doctor.save()
             response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value, key='detail_id',
                                         data=doctor.id)
@@ -46,6 +48,7 @@ def update_detail():
             "experience": request.form.get('experience',""),
             "specialized": request.form.get('specialized',""),
             "serving_type": request.form.get('serving_type', ""),
+            "pmc_number": request.form.get('pmc_number', ""),
             "verified": request.form.get('verified', ""),
         }
         data_to_update = dict([(k, v) for k, v in data_to_update.items() if len(v) > 0])
@@ -87,6 +90,7 @@ def get_doctor():
                     'experience': doc_data.experience,
                     'specialized': doc_data.specialized,
                     'serving_type': doc_data.serving_type,
+                    'pmc_number': doc_data.pmc_number,
                     'verified': doc_data.verified,
                     'user_type': doc_data.user_type,
                     'image': '/static/' + doc_data.image

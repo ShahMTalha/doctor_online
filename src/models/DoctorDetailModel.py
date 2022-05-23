@@ -15,11 +15,12 @@ class DoctorDetailModel(db.Model):
     experience = db.Column(db.Integer)
     specialized = db.Column(db.String(), nullable=False)
     serving_type = db.Column(db.String(10), nullable=False)
+    pmc_number = db.Column(db.String())
     verified = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     modified_at = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, user_id, age, qualification, serving, experience, specialized, serving_type):
+    def __init__(self, user_id, age, qualification, serving, experience, specialized, serving_type, pmc_number):
         self.user_id = user_id
         self.age = age
         self.qualification = qualification
@@ -27,6 +28,7 @@ class DoctorDetailModel(db.Model):
         self.experience = experience
         self.specialized = specialized
         self.serving_type = serving_type.lower()
+        self.pmc_number = pmc_number
         self.verified = 0
         self.created_at = datetime.datetime.now()
         self.modified_at = datetime.datetime.now()
@@ -42,6 +44,7 @@ class DoctorDetailModel(db.Model):
                                                UserModel.user_type, UserModel.phone_number, UserModel.gender,
                                                UserModel.image, DoctorDetailModel.age, DoctorDetailModel.serving,
                                                DoctorDetailModel.qualification, DoctorDetailModel.experience,
+                                               DoctorDetailModel.pmc_number,
                                                DoctorDetailModel.serving_type, DoctorDetailModel.verified) \
                         .join(DoctorDetailModel, UserModel.id == DoctorDetailModel.user_id, isouter=True)\
                         .filter(UserModel.user_type == 'doctor')
