@@ -60,7 +60,7 @@ class PatientDetailModel(db.Model):
                  FROM patient_detail pd inner join users u on pd.user_id = u.id CROSS JOIN LATERAL \
                 (VALUES ( SQRT(POW(69.1 * (pd.latitude - " + str(lat) + "), 2) + POW(69.1 * (" + str(long) + " - pd.longitude) \
                 * COS(pd.latitude / 57.3), 2)) )) v(distance) where v.distance < " + str(geo_range) + " and\
-                 u.user_type = 'patient' and pd.donating = 1 and pd.user_id != " + str(own_id) + " \
+                 pd.donating = 1 and pd.user_id != " + str(own_id) + " \
                 order by distance asc  limit " + str(limit) + " offset " + str(offset) + "")
         patient = db.engine.execute(query).all()
         return patient

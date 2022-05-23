@@ -25,6 +25,7 @@ class ResponseMessages(enum.Enum):
     lab_not_found = "No lab found against search"
     store_not_found = "No medical store found against search"
     patient_not_found = "No user found against search"
+    donor_not_found = "No donor found against search"
     ambulance_not_found = "No ambulance found against search"
     blood_request_not_found = "No blood request found against search"
     ambulance_request_not_found = "No ambulance request found against search"
