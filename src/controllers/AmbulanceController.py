@@ -98,9 +98,13 @@ def add_ambulance():
         ambulance_detail_id = request.form['ambulance_detail_id']
         ambulance_type = request.form['ambulance_type']
         specification = request.form['specification']
-        image = request.files['image']
-        file_name = ambulance_type.replace(' ', '_') + '_' + str(ambulance_detail_id)
-        image_path = FileHelper.upload_file('ambulance/' + file_name, image)
+        image = request.files.getlist("image[]")
+        image_path = ""
+        count = 1
+        for each in image:
+            file_name = ambulance_type.replace(' ', '_') + '_' + str(ambulance_detail_id) + '_' + str(count)
+            image_path += FileHelper.upload_file('ambulance/' + file_name, each) + ' | '
+            count += 1
         report = AmbulanceTypeModel(ambulance_detail_id, ambulance_type, specification, image_path)
         report.save()
         response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value, key='detail_id',
@@ -121,10 +125,15 @@ def update_ambulance():
             "ambulance_type": request.form.get('ambulance_type', ""),
             "specification": request.form.get('specification', "")
         }
-        image = request.files.get('image', "")
+        image = request.files.getlist("image[]")
+        image_path = ""
         if image:
-            file_name = data_to_update['ambulance_type'].replace(' ', '_') + '_' + str(ambulance_detail_id)
-            FileHelper.upload_file('ambulance/' + file_name, image)
+            count = 1
+            for each in image:
+                file_name = data_to_update['ambulance_type'].replace(' ', '_') + '_' + str(ambulance_detail_id) + '_' + str(count)
+                image_path += FileHelper.upload_file('ambulance/' + file_name, each) + ' | '
+                count += 1
+            data_to_update['image'] = image_path
         data_to_update = dict([(k, v) for k, v in data_to_update.items() if len(v) > 0])
         AmbulanceTypeModel.update_by_id(id, data_to_update)
         response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value)
@@ -160,6 +169,11 @@ def get_ambulance():
         if db_data:
             data = []
             for each in db_data:
+                files = each.ambulance_type_image.split(' | ')
+                final_files = []
+                for each_file in files:
+                    if each_file:
+                        final_files.append('/static/' + each_file)
                 each_rec = {
                     'id': each.id,
                     'ambulance_detail_id': each.ambulance_detail_id,
@@ -177,13 +191,13 @@ def get_ambulance():
                     'user_type': each.user_type,
                     'verified': each.verified,
                     'image': '/static/' + each.image,
-                    'ambulance_type_image': '/static/' + each.ambulance_type_image,
+                    'ambulance_type_image':  final_files,
                 }
                 data.append(each_rec)
             response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value, data=data)
 
         else:
-            response = Response.error(ResponseCodes.pre_condition.value, ResponseMessages.lab_not_found.value)
+            response = Response.error(ResponseCodes.pre_condition.value, ResponseMessages.ambulance_not_found.value)
 
     except Exception as e:
         response = Response.error(ResponseCodes.forbidden.value, ResponseMessages.error.value + str(e))
