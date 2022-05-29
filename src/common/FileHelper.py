@@ -4,9 +4,10 @@ from src.common.globals import static_dir
 
 class FileHelper:
     @staticmethod
-    def upload_file(file_name, file):
-        extension = FileHelper.extract_extension(file.filename)
-        file_path = file_name + '.' + extension
+    def upload_file(file_path, file, no_extension=True):
+        if no_extension:
+            extension = FileHelper.extract_extension(file.filename)
+            file_path = file_path + '.' + extension
         file.save(os.path.join(static_dir, file_path))
 
         return file_path

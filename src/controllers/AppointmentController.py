@@ -34,6 +34,10 @@ def get_appointments():
                     'day': app_data.day,
                     'start_time': app_data.start_time.strftime("%H:%M"),
                     'end_time': app_data.end_time.strftime("%H:%M"),
+                    'address': app_data.address,
+                    'lab_report_id': app_data.lab_report_id,
+                    'report_name': app_data.report_name,
+                    'price': app_data.price,
                     'status': app_data.status
                 }
                 data.append(each)
@@ -72,6 +76,8 @@ def set_appointment():
         str_date = request.form['date']
         start_time = request.form['start_time']
         end_time = request.form['end_time']
+        address = request.form.get('address', None)
+        lab_report_id = request.form.get('lab_report_id', None)
         avoid_clash = request.form.get('avoid_clash', '0')
         date = datetime.datetime.strptime(str_date, "%d-%m-%Y")
         day = date.strftime("%A")
@@ -87,11 +93,13 @@ def set_appointment():
                     'day': day,
                     'start_time': start_time,
                     'end_time': end_time,
-                    'status': 'pending'
+                    'status': 'pending',
+                    'address': address,
+                    'lab_report_id': lab_report_id,
                 }
                 AppointmentModel.update_by_id(id, data_to_update)
             else:
-                appointment = AppointmentModel(requester, appointer, date, day, start_time, end_time)
+                appointment = AppointmentModel(requester, appointer, date, day, start_time, end_time, address, lab_report_id)
                 appointment.save()
                 id = appointment.id
             response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value, key='appointment_id',

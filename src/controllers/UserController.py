@@ -69,7 +69,7 @@ def update_user():
         image = request.files.get('image', "")
         user_data = UserModel.get_user(user_id=id)
         if image:
-            FileHelper.upload_file(user_data.image, image)
+            FileHelper.upload_file(user_data.image, image, no_extension=False)
         data_to_update = dict([(k, v) for k, v in data_to_update.items() if len(v) > 0])
         UserModel.update_by_id(id, data_to_update)
         response = Response.success(ResponseCodes.success.value, ResponseMessages.success.value)

@@ -1,6 +1,7 @@
 from . import db
 import datetime
 from .UserModel import UserModel
+from .LabReportsModel import LabReportsModel
 from sqlalchemy.orm import aliased
 from sqlalchemy import func
 
@@ -15,11 +16,13 @@ class AppointmentModel(db.Model):
     day = db.Column(db.String(10), nullable=False)
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
+    address = db.Column(db.String())
+    lab_report_id = db.Column(db.Integer, db.ForeignKey(LabReportsModel.id))
     status = db.Column(db.String(), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     modified_at = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, requester, appointer, date, day, start_time, end_time):
+    def __init__(self, requester, appointer, date, day, start_time, end_time, address, lab_report_id):
         self.requester = requester
         self.appointer = appointer
         self.date = date
@@ -27,6 +30,8 @@ class AppointmentModel(db.Model):
         self.start_time = start_time
         self.end_time = end_time
         self.status = 'pending'
+        self.address = address
+        self.lab_report_id = lab_report_id
         self.created_at = datetime.datetime.now()
         self.modified_at = datetime.datetime.now()
 
@@ -53,9 +58,12 @@ class AppointmentModel(db.Model):
                                                            AppointmentModel.end_time,
                                                            User_Appointer.name.label("appointer_name"),
                                                            User_Requestor.name.label("requestor_name"),
+                                                           AppointmentModel.address, AppointmentModel.lab_report_id,
+                                                           LabReportsModel.report_name, LabReportsModel.price,
                                                            AppointmentModel.status) \
         .join(User_Requestor, User_Requestor.id == AppointmentModel.requester) \
-        .join(User_Appointer, User_Appointer.id == AppointmentModel.appointer)
+        .join(User_Appointer, User_Appointer.id == AppointmentModel.appointer) \
+        .join(LabReportsModel, AppointmentModel.lab_report_id == LabReportsModel.id, isouter=True)
         if requester or appointer:
             if requester:
                 appointment = appointment.filter(AppointmentModel.requester == requester)
